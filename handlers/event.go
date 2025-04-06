@@ -1,6 +1,9 @@
 package handlers
 
 import (
+	"context"
+	"time"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/shashankj99/ticket-booking-api/models"
 )
@@ -10,7 +13,15 @@ type EventHandler struct {
 }
 
 func (h *EventHandler) FindMany(c *fiber.Ctx) error {
-	return nil
+	context, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	events, err := h.repo.FindMany(context)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(events)
 }
 
 func (h *EventHandler) FindOne(c *fiber.Ctx) error {
