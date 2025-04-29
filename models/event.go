@@ -6,7 +6,7 @@ import (
 )
 
 type Event struct {
-	ID        string    `json:"id"`
+	ID        uint      `json:"id" gorm:"primaryKey"`
 	Name      string    `json:"name"`
 	Location  string    `json:"location"`
 	Date      string    `json:"date"`
@@ -16,8 +16,8 @@ type Event struct {
 
 type EventRepository interface {
 	FindMany(ctx context.Context) ([]*Event, error)
-	FindOne(ctx context.Context, id string) (*Event, error)
+	FindOne(ctx context.Context, id uint) (*Event, error)
 	Create(ctx context.Context, event *Event) (*Event, error)
-	Update(ctx context.Context, event *Event) (*Event, error)
-	Delete(ctx context.Context, id string) error
+	Update(ctx context.Context, id uint, updateData map[string]any) (*Event, error)
+	Delete(ctx context.Context, id uint) error
 }

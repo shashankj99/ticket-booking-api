@@ -25,19 +25,71 @@ func (h *EventHandler) FindMany(c *fiber.Ctx) error {
 }
 
 func (h *EventHandler) FindOne(c *fiber.Ctx) error {
-	return nil
+	id, _ := c.ParamsInt("id")
+
+	context, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	event, err := h.repo.FindOne(context, uint(id))
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(event)
 }
 
 func (h *EventHandler) Create(c *fiber.Ctx) error {
-	return nil
+	event := &models.Event{}
+
+	context, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := c.BodyParser(event); err != nil {
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	event, err := h.repo.Create(context, event)
+
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(event)
 }
 
 func (h *EventHandler) Update(c *fiber.Ctx) error {
-	return nil
+	id, _ := c.ParamsInt("id")
+	updateData := make(map[string]any)
+
+	context, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := c.BodyParser(&updateData); err != nil {
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	event, err := h.repo.Update(context, uint(id), updateData)
+
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(event)
 }
 
 func (h *EventHandler) Delete(c *fiber.Ctx) error {
-	return nil
+	id, _ := c.ParamsInt("id")
+
+	context, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err := h.repo.Delete(context, uint(id))
+
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{})
 }
 
 func NewEventHandler(router fiber.Router, repo models.EventRepository) {
