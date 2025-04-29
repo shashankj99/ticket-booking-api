@@ -1,0 +1,45 @@
+services:
+  app:
+    tty: true # keeps container running
+    restart: always
+    image: 'ticket-booking-api'
+    container_name: 'ticket-booking-api'
+    build: .
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    networks:
+      - application
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/src/app
+    command: air -c .air.toml
+
+  db:
+    image: postgres:latest
+    container_name: 'ticket-booking-db'
+    environment:
+      - POSTGRES_HOST=${DB_HOST}
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    ports:
+      - '5433:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - application
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${DB_USER}", "-d", "${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  application:
+
+volumes:
+  postgres_data:
