@@ -1,0 +1,28 @@
+### Create Event
+POST http://localhost:3000/api/events
+Content-Type: application/json
+
+{
+	"name": "Test Event",
+	"location": "Test Location"
+}
+
+### Get All Events
+GET http://localhost:3000/api/events
+
+### Get Event by ID
+GET http://localhost:3000/api/events/1
+
+### Update Event
+PUT http://localhost:3000/api/events/1
+Content-Type: application/json
+
+{
+	"name": "Updated Event",
+    "location": "Updated Location",
+    "date": "2021-01-01"
+}
+
+### Delete Event
+DELETE http://localhost:3000/api/events/1
+
