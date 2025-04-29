@@ -4,18 +4,23 @@ import (
 	"context"
 
 	"github.com/shashankj99/ticket-booking-api/models"
+	"gorm.io/gorm"
 )
 
 type EventRepository struct {
-	db any
+	db *gorm.DB
 }
 
-func NewEventRepository(db any) models.EventRepository {
+func NewEventRepository(db *gorm.DB) models.EventRepository {
 	return &EventRepository{db: db}
 }
 
 func (r *EventRepository) FindMany(ctx context.Context) ([]*models.Event, error) {
-	return nil, nil
+	events := []*models.Event{}
+	if err := r.db.Model(&models.Event{}).Find(&events).Error; err != nil {
+		return nil, err
+	}
+	return events, nil
 }
 
 func (r *EventRepository) FindOne(ctx context.Context, id string) (*models.Event, error) {
