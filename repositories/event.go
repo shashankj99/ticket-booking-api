@@ -35,7 +35,7 @@ func (r *EventRepository) Create(ctx context.Context, event *models.Event) (*mod
 	if err := r.db.Model(event).Create(event).Error; err != nil {
 		return nil, err
 	}
-	return event, nil
+	return r.FindOne(ctx, event.ID)
 }
 
 func (r *EventRepository) Update(ctx context.Context, id uint, updateData map[string]any) (*models.Event, error) {
@@ -43,7 +43,7 @@ func (r *EventRepository) Update(ctx context.Context, id uint, updateData map[st
 	if err := r.db.Model(event).Where("id = ?", id).Updates(updateData).Error; err != nil {
 		return nil, err
 	}
-	return event, nil
+	return r.FindOne(ctx, id)
 }
 
 func (r *EventRepository) Delete(ctx context.Context, id uint) error {

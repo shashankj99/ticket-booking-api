@@ -20,10 +20,12 @@ func main() {
 	})
 
 	eventRepo := repositories.NewEventRepository(db)
+	ticketRepo := repositories.NewTicketRepository(db)
 
 	router := app.Group("/api")
 
 	handlers.NewEventHandler(router.Group("/events"), eventRepo)
+	handlers.NewTicketHandler(router.Group("/tickets"), ticketRepo)
 
 	app.Listen(fmt.Sprintf(":%s", config.ServerPort))
 }

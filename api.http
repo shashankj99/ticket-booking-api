@@ -26,3 +26,28 @@ Content-Type: application/json
 ### Delete Event
 DELETE http://localhost:3000/api/events/1
 
+
+### Create Ticket
+POST http://localhost:3000/api/tickets
+Content-Type: application/json
+
+{
+	"event_id": 2
+}
+
+### Get All Tickets
+GET http://localhost:3000/api/tickets
+
+### Get Ticket by ID
+GET http://localhost:3000/api/tickets/2
+
+### Update Ticket
+PUT http://localhost:3000/api/tickets/2
+Content-Type: application/json
+
+{
+	"entered": true
+}
+
+### Delete Ticket
+DELETE http://localhost:3000/api/tickets/3
