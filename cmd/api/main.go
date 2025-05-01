@@ -7,7 +7,9 @@ import (
 	"github.com/shashankj99/ticket-booking-api/config"
 	"github.com/shashankj99/ticket-booking-api/db"
 	"github.com/shashankj99/ticket-booking-api/handlers"
+	"github.com/shashankj99/ticket-booking-api/middlewares"
 	"github.com/shashankj99/ticket-booking-api/repositories"
+	"github.com/shashankj99/ticket-booking-api/services"
 )
 
 func main() {
@@ -21,11 +23,17 @@ func main() {
 
 	eventRepo := repositories.NewEventRepository(db)
 	ticketRepo := repositories.NewTicketRepository(db)
+	authRepo := repositories.NewAuthRepository(db)
+
+	authService := services.NewAuthService(authRepo)
 
 	router := app.Group("/api")
+	handlers.NewAuthHandler(router.Group("/auth"), authService)
 
-	handlers.NewEventHandler(router.Group("/events"), eventRepo)
-	handlers.NewTicketHandler(router.Group("/tickets"), ticketRepo)
+	privateRoutes := app.Use(middlewares.AuthProtected(db))
+
+	handlers.NewEventHandler(privateRoutes.Group("/events"), eventRepo)
+	handlers.NewTicketHandler(privateRoutes.Group("/tickets"), ticketRepo)
 
 	app.Listen(fmt.Sprintf(":%s", config.ServerPort))
 }
